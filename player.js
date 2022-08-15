@@ -59,8 +59,9 @@ export class Player {
         //console.log('onground')
         return this.y >= this.game.height - this.height - this.game.groundMargin;
     }
-    setState(state){
+    setState(state, speed){
         this.currentState = this.states[state];
+        this.game.speed = this.game.maxSpeed * speed;
         this.currentState.enter();
         //요걸로 디버깅하기 좋았음...
         //Sitting handleInput에 괄호를 잘못해서 왼쪽키를 아무리 눌러도 RUNNING으로 변하지 않더라고...
