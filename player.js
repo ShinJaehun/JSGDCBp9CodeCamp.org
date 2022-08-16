@@ -1,4 +1,4 @@
-import { Sitting, Running, Jumping, Falling } from "./playerState.js";
+import { Sitting, Running, Jumping, Falling, Rolling } from "./playerState.js";
 
 export class Player {
     constructor(game) {
@@ -20,11 +20,10 @@ export class Player {
 
         this.speed = 0;
         this.maxSpeed = 10;
-        this.states = [new Sitting(this), new Running(this), new Jumping(this), new Falling(this)];
-        this.currentState = this.states[0];
-        this.currentState.enter();
+        this.states = [new Sitting(this.game), new Running(this.game), new Jumping(this.game), new Falling(this.game), new Rolling(this.game)];
     }
     update(input, deltaTime){
+        this.checkCollision();
         this.currentState.handleInput(input)
         //horizontal movement
         // 근데 솔직히 이 부분도 playerState로 넘겨야 하는거 아닌가?
@@ -51,6 +50,8 @@ export class Player {
         }
     }
     draw(context){
+        if (this.game.debug) context.strokeRect(this.x, this.y, this.width, this.height);
+
         // context.fillStyle = 'red';
         // context.fillRect(this.x, this.y, this.width, this.height);
         context.drawImage(this.image, this.frameX * this.width, this.frameY * this.height, this.width, this.height, this.x, this.y, this.width, this.height);
@@ -66,5 +67,21 @@ export class Player {
         //요걸로 디버깅하기 좋았음...
         //Sitting handleInput에 괄호를 잘못해서 왼쪽키를 아무리 눌러도 RUNNING으로 변하지 않더라고...
         //console.log(this.currentState);
+    }
+    checkCollision(){
+        this.game.enemies.forEach(enemy => {
+            if ( 
+                enemy.x < this.x + this.width &&
+                enemy.x + enemy.width > this.x &&
+                enemy.y < this.y + this.height &&
+                enemy.y + enemy.height > this.y
+                ) {
+                    enemy.markedForDeletion = true;
+                    this.game.score++;
+
+            } else {
+
+            }
+        });
     }
 }
